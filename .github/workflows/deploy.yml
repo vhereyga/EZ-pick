@@ -31,7 +31,14 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: npm run build
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "❌ ERROR: GitHub Secrets not configured!"
+            echo "Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in:"
+            echo "Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+          npm run build
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
