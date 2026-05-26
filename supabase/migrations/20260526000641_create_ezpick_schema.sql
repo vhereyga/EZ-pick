@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS products (
 
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read products" ON products;
+
 CREATE POLICY "Anyone can read products"
   ON products FOR SELECT
   TO anon, authenticated
@@ -48,10 +50,14 @@ CREATE TABLE IF NOT EXISTS orders (
 
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own orders" ON orders;
+
 CREATE POLICY "Users can read own orders"
   ON orders FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert own orders" ON orders;
 
 CREATE POLICY "Users can insert own orders"
   ON orders FOR INSERT
@@ -70,6 +76,8 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own order items" ON order_items;
+
 CREATE POLICY "Users can read own order items"
   ON order_items FOR SELECT
   TO authenticated
@@ -80,6 +88,8 @@ CREATE POLICY "Users can read own order items"
       AND orders.user_id = auth.uid()
     )
   );
+
+DROP POLICY IF EXISTS "Users can insert own order items" ON order_items;
 
 CREATE POLICY "Users can insert own order items"
   ON order_items FOR INSERT

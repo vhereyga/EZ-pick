@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS products (
 
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read products" ON products;
+
 CREATE POLICY "Anyone can read products"
   ON products FOR SELECT
   TO anon, authenticated
@@ -53,10 +55,14 @@ CREATE TABLE IF NOT EXISTS orders (
 
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own orders" ON orders;
+
 CREATE POLICY "Users can read own orders"
   ON orders FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert own orders" ON orders;
 
 CREATE POLICY "Users can insert own orders"
   ON orders FOR INSERT
@@ -75,6 +81,8 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own order items" ON order_items;
+
 CREATE POLICY "Users can read own order items"
   ON order_items FOR SELECT
   TO authenticated
@@ -85,6 +93,8 @@ CREATE POLICY "Users can read own order items"
       AND orders.user_id = auth.uid()
     )
   );
+
+DROP POLICY IF EXISTS "Users can insert own order items" ON order_items;
 
 CREATE POLICY "Users can insert own order items"
   ON order_items FOR INSERT
@@ -107,10 +117,14 @@ CREATE TABLE IF NOT EXISTS admin_users (
 
 ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can read admin_users" ON admin_users;
+
 CREATE POLICY "Admins can read admin_users"
   ON admin_users FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can insert own admin record" ON admin_users;
 
 CREATE POLICY "Admins can insert own admin record"
   ON admin_users FOR INSERT
@@ -130,6 +144,8 @@ CREATE TABLE IF NOT EXISTS payments (
 
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own payments" ON payments;
+
 CREATE POLICY "Users can read own payments"
   ON payments FOR SELECT
   TO authenticated
@@ -140,6 +156,8 @@ CREATE POLICY "Users can read own payments"
       AND orders.user_id = auth.uid()
     )
   );
+
+DROP POLICY IF EXISTS "Users can insert own payments" ON payments;
 
 CREATE POLICY "Users can insert own payments"
   ON payments FOR INSERT
@@ -153,6 +171,8 @@ CREATE POLICY "Users can insert own payments"
   );
 
 -- Admin policies for products
+DROP POLICY IF EXISTS "Admins can insert products" ON products;
+
 CREATE POLICY "Admins can insert products"
   ON products FOR INSERT
   TO authenticated
@@ -163,6 +183,8 @@ CREATE POLICY "Admins can insert products"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can update products" ON products;
+
 CREATE POLICY "Admins can update products"
   ON products FOR UPDATE
   TO authenticated
@@ -172,6 +194,8 @@ CREATE POLICY "Admins can update products"
       WHERE admin_users.user_id = auth.uid()
     )
   );
+
+DROP POLICY IF EXISTS "Admins can delete products" ON products;
 
 CREATE POLICY "Admins can delete products"
   ON products FOR DELETE
@@ -184,6 +208,8 @@ CREATE POLICY "Admins can delete products"
   );
 
 -- Admin policies for orders
+DROP POLICY IF EXISTS "Admins can read all orders" ON orders;
+
 CREATE POLICY "Admins can read all orders"
   ON orders FOR SELECT
   TO authenticated
@@ -193,6 +219,8 @@ CREATE POLICY "Admins can read all orders"
       WHERE admin_users.user_id = auth.uid()
     )
   );
+
+DROP POLICY IF EXISTS "Admins can update all orders" ON orders;
 
 CREATE POLICY "Admins can update all orders"
   ON orders FOR UPDATE
@@ -205,6 +233,8 @@ CREATE POLICY "Admins can update all orders"
   );
 
 -- Admin policies for order_items
+DROP POLICY IF EXISTS "Admins can read all order items" ON order_items;
+
 CREATE POLICY "Admins can read all order items"
   ON order_items FOR SELECT
   TO authenticated
@@ -214,6 +244,8 @@ CREATE POLICY "Admins can read all order items"
       WHERE admin_users.user_id = auth.uid()
     )
   );
+
+DROP POLICY IF EXISTS "Admins can update all order items" ON order_items;
 
 CREATE POLICY "Admins can update all order items"
   ON order_items FOR UPDATE
